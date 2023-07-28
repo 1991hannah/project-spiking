@@ -1,22 +1,14 @@
 "use client";
 import Login from "@/components/Login";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { database } from "@/firebase/config";
-import Quagga from 'quagga';
-import Scanner from "@/components/Scanner";
+import {Html5QrcodeScanner} from "html5-qrcode";
 
 
 //THIS IS OUR HOME PAGE
 
 export default function Home() {
-
-  const [camera, setCamera] = useState(false);
-  const [result, setResult] = useState(null);
-
-  const onDetected = result => {
-    setResult(result);
-  };
 
   const [data, setData] = useState([
     {
@@ -251,6 +243,26 @@ export default function Home() {
     },
   ]);
 
+
+  useEffect (()=> {
+    function onScanSuccess(decodedText, decodedResult) {
+      // handle the scanned code as you like, for example:
+      console.log(`Code matched = ${decodedText}`, decodedResult);
+    }
+    
+    function onScanFailure(error) {
+      // handle scan failure, usually better to ignore and keep scanning.
+      // for example:
+      console.warn(`Code scan error = ${error}`);
+    }
+    
+    let html5QrcodeScanner = new Html5QrcodeScanner(
+      "reader",
+      { fps: 10, qrbox: {width: 250, height: 250} },
+      /* verbose= */ false);
+    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+  }, [])
+  
   
   const handleChange = (event) => {
     const filteredData = data.filter((singleData) => {
@@ -301,15 +313,9 @@ export default function Home() {
   return (
     <main>
       <h1>Welcome to our Site</h1>
-       <div className="App">
-      <p>{result ? result : "Scanning..."}</p>
-      <button onClick={() => setCamera(!camera)}>
-        {camera ? "Stop" : "Start"}
-      </button>
-      <div className="container">
-        {camera && <Scanner onDetected={onDetected} />}
-      </div>
-    </div>
+      {/* <div id="reader" width="600px"> */}
+      {/* </div> */}
+      <div id='reader'></div>
       <input type="text" onChange={handleChange} />
       {data.map((singleData) => {
         return (
