@@ -4,13 +4,16 @@ import { useEffect, useState } from "react";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { database } from "@/firebase/config";
 import {Html5QrcodeScanner} from "html5-qrcode";
-import { getBookByIsbn } from "@/utils/api";
+import { getBookByIsbn, getBookByTitle } from "@/utils/api";
 
 
 //THIS IS OUR HOME PAGE
 
 export default function Home() {
   const [data, setData] = useState([]);
+  const [ search, setSearch] = useState({
+    banana: ""
+  })
 
 function bookScanner() {
   function onScanSuccess(decodedText, decodedResult) {
@@ -38,14 +41,23 @@ function bookScanner() {
     /* verbose= */ false);
   return html5QrcodeScanner.render(onScanSuccess, onScanFailure);
 }
-  
-  const handleChange = (event) => {
-    const filteredData = data.filter((singleData) => {
-      return singleData.name
-        .toLowerCase()
-        .includes(event.target.value.toLowerCase());
-    });
-    setData(filteredData);
+
+
+const handleChange = (event) => {
+
+  setSearch((currentSearch) => {
+    const {name, value} = event.target
+    return {
+      ...currentSearch,
+      [name]: value
+    }
+  })
+}
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    getBookByTitle(search).then((book) => {
+      console.log(book)
+    }).catch(error => console.log(error))
   };
   const sendData = async (event) => {
     // event.preventDefault()
@@ -91,7 +103,10 @@ function bookScanner() {
       <button onClick={bookScanner}>Click to scan QR code</button>
       <div id='reader'></div>
       <div id='result'></div>
-      <input type="text" onChange={handleChange} />
+      <form onSubmit={handleSubmit}>
+      <input type="text" name="banana" value={search.banana} onChange={handleChange}/>
+      <button>Search book</button>
+      </form>
       {data.map((singleData) => {
         return (
           <div key={singleData.id} className="single__data">
@@ -102,7 +117,6 @@ function bookScanner() {
           </div>
         );
       })}
-      <Login />
       <button onClick={sendData}>Send data</button>
       <button onClick={getData}>Get data</button>
       <div>

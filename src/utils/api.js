@@ -8,3 +8,14 @@ export const getBookByIsbn = (isbn) => {
         return response.data.items
     });
 };
+
+export const getBookByTitle = (title) => {
+    console.log(title)
+    return booksUrl.get(`?q=intitle:${title}`).then((response) => {
+        console.log(response.data.items.slice(0, 3))
+    })
+}
+
+// GOOGLE API ENDPOINTS
+// isbn = ?q=isbn:${isbn}
+//book by title = ?q=intitle:${title}
