@@ -245,7 +245,7 @@ export default function Home() {
 function bookScanner() {
   function onScanSuccess(decodedText, decodedResult) {
     // handle the scanned code as you like, for example:
-    if (decodedText.length === 13) {
+    if (decodedText.length === 13 || decodedText.length === 10 ) {
       console.log(`Code matched = ${decodedText}`, decodedResult);
       document.getElementById("result").innerHTML=`<p>${decodedText}</p>`
       html5QrcodeScanner.clear()
