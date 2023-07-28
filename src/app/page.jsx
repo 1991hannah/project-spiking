@@ -9,7 +9,6 @@ import {Html5QrcodeScanner} from "html5-qrcode";
 //THIS IS OUR HOME PAGE
 
 export default function Home() {
-
   const [data, setData] = useState([
     {
       id: 1,
@@ -243,26 +242,27 @@ export default function Home() {
     },
   ]);
 
-
-  useEffect (()=> {
-    function onScanSuccess(decodedText, decodedResult) {
-      // handle the scanned code as you like, for example:
-      console.log(`Code matched = ${decodedText}`, decodedResult);
-    }
-    
-    function onScanFailure(error) {
-      // handle scan failure, usually better to ignore and keep scanning.
-      // for example:
-      console.warn(`Code scan error = ${error}`);
-    }
-    
-    let html5QrcodeScanner = new Html5QrcodeScanner(
-      "reader",
-      { fps: 10, qrbox: {width: 250, height: 250} },
-      /* verbose= */ false);
-    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-  }, [])
+function bookScanner() {
+  function onScanSuccess(decodedText, decodedResult) {
+    // handle the scanned code as you like, for example:
+    console.log(`Code matched = ${decodedText}`, decodedResult);
+    document.getElementById("result").innerHTML=`<p>${decodedText}</p>`
+    html5QrcodeScanner.clear()
+    document.getElementById("reader").remove()
+  }
   
+  function onScanFailure(error) {
+    // handle scan failure, usually better to ignore and keep scanning.
+    // for example:
+    console.warn(`Code scan error = ${error}`);
+  }
+  
+  let html5QrcodeScanner = new Html5QrcodeScanner(
+    "reader",
+    { fps: 10, qrbox: {width: 250, height: 250} },
+    /* verbose= */ false);
+  return html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+}
   
   const handleChange = (event) => {
     const filteredData = data.filter((singleData) => {
@@ -313,9 +313,9 @@ export default function Home() {
   return (
     <main>
       <h1>Welcome to our Site</h1>
-      {/* <div id="reader" width="600px"> */}
-      {/* </div> */}
+      <button onClick={bookScanner}>Click to scan QR code</button>
       <div id='reader'></div>
+      <div id='result'></div>
       <input type="text" onChange={handleChange} />
       {data.map((singleData) => {
         return (
