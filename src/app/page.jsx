@@ -245,10 +245,12 @@ export default function Home() {
 function bookScanner() {
   function onScanSuccess(decodedText, decodedResult) {
     // handle the scanned code as you like, for example:
-    console.log(`Code matched = ${decodedText}`, decodedResult);
-    document.getElementById("result").innerHTML=`<p>${decodedText}</p>`
-    html5QrcodeScanner.clear()
-    document.getElementById("reader").remove()
+    if (decodedText.length === 13) {
+      console.log(`Code matched = ${decodedText}`, decodedResult);
+      document.getElementById("result").innerHTML=`<p>${decodedText}</p>`
+      html5QrcodeScanner.clear()
+      document.getElementById("reader").remove()
+    }
   }
   
   function onScanFailure(error) {
@@ -259,7 +261,7 @@ function bookScanner() {
   
   let html5QrcodeScanner = new Html5QrcodeScanner(
     "reader",
-    { fps: 10, qrbox: {width: 250, height: 250} },
+    { fps: 10, qrbox: {width: 250, height: 250},  },
     /* verbose= */ false);
   return html5QrcodeScanner.render(onScanSuccess, onScanFailure);
 }
